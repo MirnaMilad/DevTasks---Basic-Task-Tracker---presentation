@@ -1,8 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import TaskItem from "../TaskItem/TaskItem";
 
 function TaskList() {
-  let taskList = ["task 1", "task 2"];
+  const [taskList, setTaskLIst] = useState([
+    { id: 1, text: 'Learn React', completed: false },
+  ]);
+
+  function onAddTask(taskName){
+    const newTask = {
+        id: taskList.length,
+        text: taskName,
+        completed:false
+    }
+    setTaskLIst([... taskList , newTask])
+  }
+
+  function onCompleteTask(index){
+    const newTaskList = [...taskList];
+    newTaskList[index].completed = !newTaskList[index].completed;
+    setTaskLIst(newTaskList);
+  }
+
+  function onDeleteTask(index){
+    const newTaskList = [...taskList];
+    newTaskList.splice(index, 1);
+    setTaskLIst(newTaskList);
+  }
   return (
     <table className="table">
       <thead>
@@ -16,7 +39,7 @@ function TaskList() {
       </thead>
       <tbody>
         {taskList.map((task, index) => {
-          return <TaskItem key={index}  task={task} index={index} />;
+          return <TaskItem key={index}  task={task} index={index} onAddTask={onAddTask} onCompleteTask={onCompleteTask} onDeleteTask={onDeleteTask}/>;
         })}
       </tbody>
     </table>

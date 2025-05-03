@@ -1,13 +1,23 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useImperativeHandle, forwardRef } from "react";
 
-function TaskForm() {
+const TaskForm = forwardRef(({ onAddTask }, ref) => {
   const taskNameRef = useRef();
-  const [tasks, setTasks] = useState([]);
+
   function onSubmit(e) {
     e.preventDefault()
-    const taskName = taskNameRef.current.value;
-    setTasks([...tasks, taskName]);
+    const taskName = taskNameRef.current.value.trim();
+    if(taskName){
+        onAddTask(taskName);
+        taskNameRef.current.value = "";
+    }
   }
+
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+        onSubmit({ preventDefault: () => {} });
+      }
+    }));
+
   return (
     <>
       <form onSubmit={onSubmit} className="mb-3">
@@ -17,10 +27,9 @@ function TaskForm() {
           className="form-control mb-2"
           ref={taskNameRef}
         />
-        <button type="submit" className="btn btn-primary mb-2">Submit</button>
       </form>
     </>
   );
-}
+})
 
 export default TaskForm;
