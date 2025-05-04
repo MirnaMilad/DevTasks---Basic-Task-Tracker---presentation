@@ -1,48 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TaskItem from "../TaskItem/TaskItem";
+import TaskForm from "../TaskForm/TaskForm";
 
 function TaskList() {
-  const [taskList, setTaskLIst] = useState([
-    { id: 1, text: 'Learn React', completed: false },
-  ]);
+  const [taskList, setTaskList] = useState(() => {
+    const storedTasks = localStorage.getItem("taskList");
+    return storedTasks ? JSON.parse(storedTasks) : [];
+  });
 
-  function onAddTask(taskName){
+  useEffect(() => {
+    localStorage.setItem("taskList", JSON.stringify(taskList));
+  }, [taskList]);
+
+  const onAddTask = (taskName) => {
     const newTask = {
-        id: taskList.length,
-        text: taskName,
-        completed:false
-    }
-    setTaskLIst([... taskList , newTask])
-  }
+      id: Date.now(), // unique ID
+      text: taskName,
+      completed: false,
+    };
+    setTaskList((prev) => [...prev, newTask]);
+  };
 
-  function onCompleteTask(index){
-    const newTaskList = [...taskList];
-    newTaskList[index].completed = !newTaskList[index].completed;
-    setTaskLIst(newTaskList);
-  }
+  const onCompleteTask = (index) => {
+    const newTasks = [...taskList];
+    newTasks[index].completed = !newTasks[index].completed;
+    setTaskList(newTasks);
+  };
 
-  function onDeleteTask(index){
-    const newTaskList = [...taskList];
-    newTaskList.splice(index, 1);
-    setTaskLIst(newTaskList);
-  }
+  const onDeleteTask = (index) => {
+    const newTasks = taskList.filter((_, i) => i !== index);
+    setTaskList(newTasks);
+  };
+
   return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Task</th>
-          <th scope="col">Add Task</th>
-          <th scope="col">check</th>
-          <th scope="col">delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {taskList.map((task, index) => {
-          return <TaskItem key={index}  task={task} index={index} onAddTask={onAddTask} onCompleteTask={onCompleteTask} onDeleteTask={onDeleteTask}/>;
-        })}
-      </tbody>
-    </table>
+    <div className="container py-5">
+      <h4 className="text-center mb-4">Task Manager</h4>
+      <div className="card shadow-sm mx-auto" style={{ maxWidth: "600px" }}>
+        <TaskForm onAddTask={onAddTask} />
+        <div className="card-body py-0">
+          {taskList.length === 0 ? (
+            <p className="text-muted text-center mt-3">No tasks found.</p>
+          ) : (
+            <table className="table">
+              {taskList.map((task, index) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  index={index}
+                  onCompleteTask={onCompleteTask}
+                  onDeleteTask={onDeleteTask}
+                />
+              ))}
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

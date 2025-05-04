@@ -1,40 +1,26 @@
-import React, { useRef } from "react";
-import GenericModal from "../../shared/Modal/GenericModal";
-import TaskForm from "../TaskForm/TaskForm";
+import React from "react";
 
-function TaskItem({ task, index , onAddTask , onCompleteTask , onDeleteTask }) {
-    const taskFormRef = useRef();
-    const handleSave = () => {
-        if (taskFormRef.current) {
-          taskFormRef.current.submit();
-        }
-      };
+function TaskItem({ task, index , onCompleteTask , onDeleteTask }) {
   return (
     <>
         <tr key={index}>
-          <td>{index + 1}</td>
           <td>
-            <label className="form-check-label" htmlFor="checkDefault">
-              {task.text}
-            </label>
-          </td>
-          <td>
-            <GenericModal buttonClass='bi-plus-circle' onSave={handleSave}>
-                <TaskForm  ref={taskFormRef} onAddTask={onAddTask}/>
-            </GenericModal>
-          </td>
-          <td>
-            <input
-              className="form-check-input"
+          <div class="form-check">
+          <input
+              className="form-check-input ms-0"
               type="checkbox"
               value={task.isCompleted}
               id="checkDefault"
               onChange={() => onCompleteTask(index)}
               checked={task.isCompleted}
             />
+            <label className="form-check-label ms-4" htmlFor="checkDefault">
+              {task.text}
+            </label>
+            </div>
           </td>
           <td>
-            <i className='bi bi-trash' onClick={() => onDeleteTask(index)}></i>
+            <i className='bi bi-trash' onClick={() => onDeleteTask(index)}/>
           </td>
         </tr>
     </>

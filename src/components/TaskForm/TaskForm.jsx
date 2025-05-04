@@ -1,35 +1,46 @@
 import React, { useRef, useImperativeHandle, forwardRef } from "react";
 
-const TaskForm = forwardRef(({ onAddTask }, ref) => {
+const TaskForm = forwardRef(({ onAddTask = false }, ref) => {
   const taskNameRef = useRef();
 
   function onSubmit(e) {
-    e.preventDefault()
+    if (e) {
+      e.preventDefault();
+    }
     const taskName = taskNameRef.current.value.trim();
-    if(taskName){
-        onAddTask(taskName);
-        taskNameRef.current.value = "";
+    if (taskName) {
+      onAddTask(taskName);
+      taskNameRef.current.value = "";
     }
   }
 
   useImperativeHandle(ref, () => ({
     submit: () => {
-        onSubmit({ preventDefault: () => {} });
-      }
-    }));
+      onSubmit({ preventDefault: () => {} });
+    },
+  }));
 
   return (
     <>
-      <form onSubmit={onSubmit} className="mb-3">
-        <input
-          type="text"
-          placeholder="Task Name"
-          className="form-control mb-2"
-          ref={taskNameRef}
-        />
+      <form onSubmit={onSubmit} className="card-header p-4">
+        <div className="row">
+          <div className="col-auto flex-grow-1">
+            <input
+              type="text"
+              placeholder="Task Name"
+              className="form-control"
+              ref={taskNameRef}
+            />
+          </div>
+          <div className="col-auto">
+              <button type="submit" className="btn btn-primary">
+                Add Task
+              </button>
+          </div>
+        </div>
       </form>
     </>
   );
-})
+});
 
 export default TaskForm;
